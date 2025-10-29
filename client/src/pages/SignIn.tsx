@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import type {  SigninData } from "../utils/auth";
 import { signin } from "../utils/auth";
 
+interface FieldError {
+  field: string;
+  message: string;
+}
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -12,24 +16,45 @@ const SignIn: React.FC = () => {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    // Clear field error when typing
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setErrors({});
+    setGeneralError("");
 
     try {
-      await signin(formData);
+      const result = await signin(formData);
+
+      if (!result.success) {
+        if (result.errors) {
+          const fieldErrors: Record<string, string> = {};
+          result.errors.forEach((err: FieldError) => {
+            fieldErrors[err.field] = err.message;
+          });
+          setErrors(fieldErrors);
+        } else {
+          setGeneralError(result.message || "Signin failed");
+        }
+        setLoading(false);
+        return; // ❌ stop here on error — do NOT show success popup
+      }
+
+      // ✅ Only here login is successful
       alert("Signin successful!");
-      navigate("/landing"); // redirect after success
+      navigate("/landing");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signin failed");
+      setGeneralError(err.response?.data?.message || "Signin failed");
     } finally {
       setLoading(false);
     }
@@ -45,29 +70,45 @@ const SignIn: React.FC = () => {
           Sign In
         </h2>
 
-        {error && (
-          <p className="text-red-400 text-sm text-center mb-3">{error}</p>
+        
+        {generalError && (
+          <p className="text-red-400 text-sm text-center mb-3">{generalError}</p>
         )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white border border-gray-600 p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
+<div className="mb-3">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full bg-gray-700 text-white border ${
+              errors.email ? "border-red-500" : "border-gray-600"
+            } p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400`}
+            required
+          />
+          {errors.email && (
+            <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+          )}
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white border border-gray-600 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
+        <div className="mb-4">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full bg-gray-700 text-white border ${
+              errors.password ? "border-red-500" : "border-gray-600"
+            } p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400`}
+            required
+          />
+          {errors.password && (
+            <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+          )}
+        </div>
+
 
         <button
           type="submit"

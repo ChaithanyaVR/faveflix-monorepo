@@ -61,17 +61,31 @@ export const isAuthenticated = (): boolean => {
 
 
 export const signup = async (data: SignupData) => {
-  const response = await axios.post(`${API_URL}/signup`, data);
-  const { token } = response.data;
-  setToken(token);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_URL}/signup`, data);
+    const { token } = response.data;
+    setToken(token);
+    return { success: true, data: response.data };
+  } catch (err: any) {
+    if (err.response?.data?.errors) {
+      return { success: false, errors: err.response.data.errors };
+    }
+    return { success: false, message: err.response?.data?.message || "Signup failed" };
+  }
 };
 
 export const signin = async (data: SigninData) => {
-  const response = await axios.post(`${API_URL}/signin`, data);
-  const { token } = response.data;
-  setToken(token);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_URL}/signin`, data);
+    const { token } = response.data;
+    setToken(token);
+    return { success: true, data: response.data };
+  } catch (err: any) {
+    if (err.response?.data?.errors) {
+      return { success: false, errors: err.response.data.errors };
+    }
+    return { success: false, message: err.response?.data?.message || "Signin failed" };
+  }
 };
 
 

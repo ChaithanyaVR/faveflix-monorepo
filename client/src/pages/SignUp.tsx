@@ -4,35 +4,54 @@ import { useNavigate } from "react-router-dom";
 import type { SignupData } from "../utils/auth";
 import { signup } from "../utils/auth";
 
+interface FieldError {
+  field: string;
+  message: string;
+}
+
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
+  
   const [formData, setFormData] = useState<SignupData>({
     username: "",
     email: "",
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); // clear field error on change
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setErrors({});
+    setGeneralError("");
 
-    try {
-      await signup(formData);
-      alert("Signup successful!");
-      navigate("/landing"); // redirect after success
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
-    } finally {
+    const result = await signup(formData);
+
+    if (!result.success) {
+      if (result.errors) {
+        // Convert array of { field, message } → { fieldName: message }
+        const fieldErrors: Record<string, string> = {};
+        result.errors.forEach((err: FieldError) => {
+          fieldErrors[err.field] = err.message;
+        });
+        setErrors(fieldErrors);
+      } else {
+        setGeneralError(result.message || "Signup failed");
+      }
       setLoading(false);
+      return;
     }
+
+    alert("Signup successful!");
+    navigate("/landing");
   };
 
   return (
@@ -45,39 +64,62 @@ const SignUp: React.FC = () => {
           Create Account
         </h2>
 
-        {error && (
-          <p className="text-red-400 text-sm text-center mb-3">{error}</p>
+        {generalError && (
+          <p className="text-red-400 text-sm text-center mb-3">
+            {generalError}
+          </p>
         )}
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white border border-gray-600 p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
+<div className="mb-3">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            className={`w-full bg-gray-700 text-white border ${
+              errors.username ? "border-red-500" : "border-gray-600"
+            } p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400`}
+            required
+          />
+          {errors.username && (
+            <p className="text-red-400 text-xs mt-1">{errors.username}</p>
+          )}
+        </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white border border-gray-600 p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
+        <div className="mb-3">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full bg-gray-700 text-white border ${
+              errors.email ? "border-red-500" : "border-gray-600"
+            } p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400`}
+            required
+          />
+          {errors.email && (
+            <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+          )}
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white border border-gray-600 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
+        <div className="mb-4">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full bg-gray-700 text-white border ${
+              errors.password ? "border-red-500" : "border-gray-600"
+            } p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400`}
+            required
+          />
+          {errors.password && (
+            <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+          )}
+        </div>
 
         <button
           type="submit"
