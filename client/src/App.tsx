@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Landing from "./pages/Landing";
+import AddFavorite from './pages/AddFavorite'
 import Dashboard from "./pages/Dashboard";
 import { isAuthenticated } from "./utils/auth";
 import * as React from "react";
@@ -13,10 +13,10 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/landing" />} />
+      <Route path="/" element={<Navigate to="/favorite" />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/landing" element={<PrivateRoute element={<Landing />} />} />
+      <Route path="/favorite" element={<PrivateRoute element={<AddFavorite/>} />} />
       <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
     </Routes>
   );

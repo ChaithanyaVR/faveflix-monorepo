@@ -24,7 +24,7 @@ const SignUp: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); // clear field error on change
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +37,7 @@ const SignUp: React.FC = () => {
 
     if (!result.success) {
       if (result.errors) {
-        // Convert array of { field, message } → { fieldName: message }
+        
         const fieldErrors: Record<string, string> = {};
         result.errors.forEach((err: FieldError) => {
           fieldErrors[err.field] = err.message;
@@ -51,7 +51,7 @@ const SignUp: React.FC = () => {
     }
 
     alert("Signup successful!");
-    navigate("/landing");
+    navigate("/favorite");
   };
 
   return (

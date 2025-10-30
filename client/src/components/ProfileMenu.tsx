@@ -1,42 +1,41 @@
-import type { DecodedUser } from "../utils/auth";
 import * as React from "react";
+import type { DecodedUser } from "../utils/auth";
+import { LayoutDashboard, LogOut } from "lucide-react";
 
 interface Props {
-    user: DecodedUser | null;
-    onLogout: () => void;
-    onDashboard: () => void;
-  }
-  
-  const ProfileMenu: React.FC<Props> = ({ user, onLogout, onDashboard }) => {
-    return (
-        <div className="absolute right-0 mt-3 w-60 rounded-xl  backdrop-blur-md bg-gradient-to-b from-slate-800/90 to-slate-900/90 border border-slate-700 text-gray-100 z-50">
-      {/* Header section */}
-      <div className="border-b border-slate-700 px-4 py-3">
-        <p className="font-semibold text-white text-sm">
-          {user?.username}
-        </p>
+  user: DecodedUser | null;
+  onLogout: () => void;
+  onDashboard: () => void | Promise<void>;
+}
+
+const ProfileMenu: React.FC<Props> = ({ user, onLogout, onDashboard }) => {
+  return (
+    <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-700 rounded-xl shadow-lg py-2 z-50">
+
+      <div className="px-4 py-3 border-b border-neutral-700">
+        <p className="text-sm font-semibold text-white">{user?.username}</p>
         <p className="text-xs text-gray-400 truncate">{user?.email}</p>
       </div>
 
-      
-      <div className="flex flex-col px-4 py-4 gap-2">
+      <div className="px-2 py-2 flex flex-col gap-1">
+
         <button
           onClick={onDashboard}
-          className="text-left text-sm py-2 px-3 rounded-md hover:bg-slate-700/70 transition"
+          className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-sm text-gray-200"
         >
-          My Dashboard
+          <LayoutDashboard size={16}/> Dashboard
         </button>
 
         <button
           onClick={onLogout}
-          className="text-left text-sm py-2 px-3 rounded-md hover:bg-red-600/70 hover:text-white transition text-red-400"
+          className="flex items-center gap-2 px-3 py-2 rounded hover:bg-red-600/50 text-sm text-red-400"
         >
-          Logout
+          <LogOut size={16}/> Logout
         </button>
+
       </div>
     </div>
-    );
-  };
-  
-  export default ProfileMenu;
-  
+  );
+};
+
+export default ProfileMenu;

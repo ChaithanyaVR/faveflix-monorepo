@@ -1,7 +1,7 @@
 import * as React from "react";
-import  { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type {  SigninData } from "../utils/auth";
+import type { SigninData } from "../utils/auth";
 import { signin } from "../utils/auth";
 
 interface FieldError {
@@ -47,12 +47,11 @@ const SignIn: React.FC = () => {
           setGeneralError(result.message || "Signin failed");
         }
         setLoading(false);
-        return; // ❌ stop here on error — do NOT show success popup
+        return;
       }
 
-      // ✅ Only here login is successful
       alert("Signin successful!");
-      navigate("/landing");
+      navigate("/favorite");
     } catch (err: any) {
       setGeneralError(err.response?.data?.message || "Signin failed");
     } finally {
@@ -66,16 +65,17 @@ const SignIn: React.FC = () => {
         onSubmit={handleSubmit}
         className="bg-gray-800 shadow-2xl rounded-xl p-8 w-96 border border-gray-700"
       >
-       <h2 className="text-2xl font-bold mb-6 text-center text-white">
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
           Sign In
         </h2>
 
-        
         {generalError && (
-          <p className="text-red-400 text-sm text-center mb-3">{generalError}</p>
+          <p className="text-red-400 text-sm text-center mb-3">
+            {generalError}
+          </p>
         )}
 
-<div className="mb-3">
+        <div className="mb-3">
           <input
             type="email"
             name="email"
@@ -109,7 +109,6 @@ const SignIn: React.FC = () => {
           )}
         </div>
 
-
         <button
           type="submit"
           disabled={loading}
@@ -128,6 +127,5 @@ const SignIn: React.FC = () => {
     </div>
   );
 };
-
 
 export default SignIn;

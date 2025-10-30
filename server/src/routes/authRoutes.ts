@@ -23,15 +23,15 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     if (!parsed.success) {
         const formattedErrors = formatZodError(parsed.error);
-        // return all field-specific messages instead of generic message
+       
         return res.status(400).json({
           success: false,
-          errors: formattedErrors, // 👈 no "Validation failed" wrapper
+          errors: formattedErrors, 
         });
       }
 
     const { username, email, password } = parsed.data;
-
+      
     // 🔍 Check existing user
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
