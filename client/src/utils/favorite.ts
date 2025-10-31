@@ -1,7 +1,8 @@
 import axios from "axios";
 import { getToken } from "./auth";
 
-const API_URL = "http://localhost:3000/api/favorites";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/favorites`;
+
 
 const authHeaders = () => {
   const token = getToken();

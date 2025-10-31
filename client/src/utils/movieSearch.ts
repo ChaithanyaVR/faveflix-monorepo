@@ -2,7 +2,8 @@ import axios from "axios";
 import { getToken } from "./auth";
 import type { MovieSearchResult, MovieDetails } from '../types/movie';
 
-const API_URL = "http://localhost:3000/api/movies";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/movies`;
+
 
 const authHeaders = () => {
   const token = getToken();
