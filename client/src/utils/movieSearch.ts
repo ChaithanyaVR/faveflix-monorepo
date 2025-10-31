@@ -2,7 +2,11 @@ import axios from "axios";
 import { getToken } from "./auth";
 import type { MovieSearchResult, MovieDetails } from '../types/movie';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/movies`;
+const API_URL =
+  import.meta.env.PROD && import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api/movies`
+    : "http://localhost:3000/api/movies";
+
 
 
 const authHeaders = () => {
