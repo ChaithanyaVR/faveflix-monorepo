@@ -21,7 +21,12 @@ export interface SigninData {
 }
 
 
-const API_URL = "http://localhost:3000/api/auth"; 
+const API_URL =
+  import.meta.env.PROD && import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api/auth`
+    : "http://localhost:3000/api/auth";
+
+
 
 
 export const setToken = (token: string) => {
